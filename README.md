@@ -35,7 +35,7 @@ After submitting a timed paper, students can download a PDF with the paper and a
 
 ## Desktop icon
 
-On desktop Chrome or Edge, open the deployed app and select **Install** in the address bar (the install control is visible in the supplied screenshot), or use the browser menu to create a shortcut. This adds Little Sun to the desktop/apps list with its sun icon. On phones, use the browser's **Add to Home Screen** option.
+Use the branded install page at <https://75neel-ops.github.io/deepbluemonkey/little-sun/>. It uses a web app manifest named **Little Sun** and the sun icon, while opening the Streamlit learning app full-screen. On desktop, select **Install Little Sun** or Chrome/Edge's install control. On Android, choose **Install app** in Chrome; on iPhone or iPad, use **Share → Add to Home Screen**. The direct Streamlit URL may still install with Streamlit's own icon and name.
 
 ## Donations
 
