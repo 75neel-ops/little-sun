@@ -296,11 +296,14 @@ def header() -> None:
 
 
 def donation_button() -> None:
+    # Razorpay's variable-amount form needs more vertical room than its basic
+    # one-line button. Keep the iframe scrollable so expanded checkout fields
+    # are reachable inside Streamlit's sidebar.
     components.html(
         '<form><script src="https://checkout.razorpay.com/v1/payment-button.js" '
         'data-payment_button_id="pl_Tvez6NOZsFJFmN" async></script></form>',
-        height=58,
-        scrolling=False,
+        height=220,
+        scrolling=True,
     )
 
 
