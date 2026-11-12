@@ -10,6 +10,7 @@ import time
 from typing import Any
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 try:
     from google import genai
@@ -35,7 +36,118 @@ SUBJECTS_BY_CLASS = {
     8: ["English", "Bengali", "Mathematics", "Physics", "Chemistry", "Biology", "History", "Civics", "Geography", "Computer Studies", "Arts Education"],
 }
 
-st.set_page_config(page_title="Little Sun | Learn, practise, shine", page_icon="☀️", layout="wide", initial_sidebar_state="expanded")
+# Broad chapter suggestions for common ICSE/CISCE school topics. Schools choose
+# different textbooks, so students can always enter their own chapter below.
+CHAPTERS = {
+    "English": {
+        1: ["Alphabet and sounds", "My family", "At school", "Animals around us", "Stories and poems", "Naming words", "Action words", "Simple sentences"],
+        2: ["Reading short stories", "Poems and rhymes", "My neighbourhood", "Nouns and pronouns", "Doing words", "Describing words", "Simple tenses", "Sentence writing"],
+        3: ["Stories and characters", "Poems and rhythm", "Comprehension", "Nouns and pronouns", "Verbs and tenses", "Adjectives and adverbs", "Punctuation", "Paragraph writing"],
+        4: ["Fiction and fables", "Poetry", "Comprehension", "Parts of speech", "Tenses", "Direct and indirect speech", "Punctuation", "Letter writing"],
+        5: ["Stories and biographies", "Poetry", "Comprehension", "Nouns and pronouns", "Tenses and verbs", "Prepositions and conjunctions", "Reported speech", "Essay writing"],
+        6: ["Prose and short stories", "Poetry", "Drama", "Comprehension", "Parts of speech", "Tenses", "Active and passive voice", "Composition writing"],
+        7: ["Prose and short stories", "Poetry", "Drama", "Comprehension", "Clauses and phrases", "Tenses and voice", "Reported speech", "Essay and letter writing"],
+        8: ["Prose and short stories", "Poetry", "Drama", "Comprehension", "Sentence structure", "Clauses", "Voice and narration", "Essays and formal letters"],
+    },
+    "Bengali": {
+        1: ["বর্ণপরিচয়", "স্বরবর্ণ ও ব্যঞ্জনবর্ণ", "সহজ শব্দ", "ছোট গল্প", "ছড়া ও কবিতা", "শব্দ দিয়ে বাক্য"],
+        2: ["শব্দ ও বাক্য", "ছোট গল্প", "ছড়া ও কবিতা", "বিশেষ্য", "ক্রিয়াপদ", "অনুচ্ছেদ লেখা"],
+        3: ["গল্প পাঠ", "কবিতা পাঠ", "শব্দার্থ", "বিশেষ্য ও সর্বনাম", "ক্রিয়াপদ ও কাল", "অনুচ্ছেদ রচনা"],
+        4: ["গল্প ও রূপকথা", "কবিতা", "বোধপরীক্ষণ", "পদ পরিচয়", "লিঙ্গ ও বচন", "চিঠি ও অনুচ্ছেদ"],
+        5: ["গল্প ও জীবনী", "কবিতা", "বোধপরীক্ষণ", "সমার্থক ও বিপরীত শব্দ", "কারক ও বিভক্তি", "রচনা ও পত্র"],
+        6: ["গদ্য", "পদ্য", "নাটক", "বোধপরীক্ষণ", "সন্ধি ও সমাস", "কারক ও বিভক্তি", "প্রবন্ধ ও পত্র"],
+        7: ["গদ্য ও ছোটগল্প", "কবিতা", "নাটক", "বোধপরীক্ষণ", "বাক্য ও পদপরিচয়", "বাগধারা", "প্রবন্ধ রচনা"],
+        8: ["গদ্য ও ছোটগল্প", "কবিতা", "নাটক", "বোধপরীক্ষণ", "সমাস ও প্রত্যয়", "বাচ্য ও বাক্যরূপ", "প্রবন্ধ ও প্রতিবেদন"],
+    },
+    "Mathematics": {
+        1: ["Numbers to 100", "Addition", "Subtraction", "Shapes", "Patterns", "Length and weight", "Time", "Money"],
+        2: ["Numbers to 1,000", "Addition and subtraction", "Multiplication", "Division", "Fractions", "Shapes and lines", "Measurement", "Time and money"],
+        3: ["Large numbers", "Addition and subtraction", "Multiplication and division", "Fractions", "Shapes and symmetry", "Length, mass and capacity", "Time", "Money"],
+        4: ["Place value and large numbers", "Four operations", "Factors and multiples", "Fractions", "Decimals", "Geometry", "Measurement", "Perimeter and area"],
+        5: ["Large numbers and Roman numerals", "Factors and multiples", "Fractions", "Decimals", "Percentage", "Geometry", "Area and volume", "Data handling"],
+        6: ["Natural numbers and whole numbers", "Integers", "Fractions and decimals", "Ratio and proportion", "Basic algebra", "Lines and angles", "Triangles and quadrilaterals", "Mensuration and data handling"],
+        7: ["Integers and rational numbers", "Fractions and decimals", "Ratio and proportion", "Simple equations", "Lines and angles", "Triangles", "Percentage and profit and loss", "Perimeter, area and data handling"],
+        8: ["Rational numbers", "Exponents and powers", "Algebraic expressions", "Linear equations", "Direct and inverse proportion", "Quadrilaterals", "Mensuration", "Graphs and data handling"],
+    },
+    "Environmental Studies": {
+        1: ["My body", "My family", "Food we eat", "Clothes we wear", "Our home", "Plants around us", "Animals around us", "Water and weather"],
+        2: ["Healthy habits", "People who help us", "Our neighbourhood", "Plants and trees", "Animals and their homes", "Air and water", "Seasons", "Keeping our surroundings clean"],
+        3: ["Living and non-living things", "Plants and their parts", "Animals and habitats", "Food and health", "Water in our lives", "Our environment", "Our neighbourhood", "Safety and first aid"],
+        4: ["Plants and food", "Animals and habitats", "Human body and health", "Water and weather", "Our environment", "Maps and directions", "Transport and communication", "Community helpers"],
+        5: ["Plant and animal life", "The human body", "Food, health and hygiene", "Natural resources", "Pollution and conservation", "Maps and our surroundings", "India and its regions", "Disaster safety"],
+    },
+    "Science": {
+        3: ["Living and non-living things", "Plants", "Animals", "Human body and health", "Food and nutrition", "Air and water", "Light and sound", "Our Earth and environment"],
+        4: ["Plants and photosynthesis", "Animals and adaptation", "Human body systems", "Food and health", "States of matter", "Force and energy", "Water cycle", "Environment"],
+        5: ["Plant and animal life", "Human body systems", "Health and hygiene", "Materials and changes", "Force, work and energy", "Light and sound", "Earth and space", "Natural resources"],
+    },
+    "Physics": {
+        6: ["Measurement", "Motion and distance", "Simple machines", "Force", "Work and energy", "Light", "Heat", "Electricity and magnets"],
+        7: ["Physical quantities and measurement", "Motion and time", "Force and pressure", "Work and energy", "Heat transfer", "Light", "Sound", "Electric current"],
+        8: ["Measurements", "Motion", "Force and pressure", "Energy and simple machines", "Heat", "Light", "Sound", "Electricity and magnetism"],
+    },
+    "Chemistry": {
+        6: ["Materials and their properties", "Solids, liquids and gases", "Separation of substances", "Changes around us", "Elements and compounds", "Water", "Air", "Acids and bases"],
+        7: ["Matter and its composition", "Elements, compounds and mixtures", "Separation techniques", "Physical and chemical changes", "Atoms and molecules", "Air and atmosphere", "Water", "Acids, bases and salts"],
+        8: ["Matter and its composition", "Elements and compounds", "Atoms and molecules", "Mixtures and separation", "Physical and chemical changes", "Acids, bases and salts", "Metals and non-metals", "Combustion"],
+    },
+    "Biology": {
+        6: ["The cell", "Plant life", "Animal life", "Nutrition", "Human body", "Health and hygiene", "Adaptation", "Environment"],
+        7: ["Cell structure", "Plant tissues", "Nutrition in plants", "Nutrition in animals", "Respiration and circulation", "Reproduction in plants", "Ecosystems", "Health"],
+        8: ["Cell structure and function", "Microorganisms", "Plant physiology", "Human body systems", "Reproduction", "Health and disease", "Food chains", "Conservation of nature"],
+    },
+    "History": {
+        3: ["Our past", "Family and community history", "Early people", "Early settlements", "Important people and events"],
+        4: ["Sources of history", "Early humans", "Ancient civilisations", "Early India", "Great leaders and events"],
+        5: ["Sources and timelines", "The Indus Valley civilisation", "The Vedic age", "Early kingdoms", "The Mauryan Empire", "The Gupta period", "Medieval India", "Modern India"],
+        6: ["Sources of history", "The earliest people", "The first cities", "The Vedic period", "New ideas and religions", "The first empires", "The Gupta age", "Early medieval India"],
+        7: ["Medieval India", "The Delhi Sultanate", "The Mughal Empire", "Regional kingdoms", "Bhakti and Sufi movements", "Art and architecture", "The coming of the Europeans", "The freedom movement"],
+        8: ["The modern world", "The British in India", "The Revolt of 1857", "Social and religious reform", "The Indian national movement", "The freedom struggle", "India after independence", "World history themes"],
+    },
+    "Civics": {
+        3: ["Rules at home and school", "Our community", "People who help us", "Working together", "Caring for public places"],
+        4: ["Families and communities", "Local helpers", "Rules and responsibilities", "Local government", "Respecting differences"],
+        5: ["Our country and its symbols", "Diversity in India", "Local self-government", "Rights and responsibilities", "Community participation"],
+        6: ["Diversity and inclusion", "Local self-government", "Rural administration", "Urban administration", "Equality and justice", "Rules and laws"],
+        7: ["Equality in a democracy", "State government", "The media", "Markets and consumers", "Gender and society", "Public services", "Role of the Constitution"],
+        8: ["The Indian Constitution", "Fundamental rights and duties", "Parliament and law-making", "The judiciary", "The Union government", "Social justice", "Public facilities", "Citizenship"],
+    },
+    "Geography": {
+        3: ["Our planet Earth", "Land and water", "Weather and seasons", "Maps and directions", "India and its neighbours"],
+        4: ["The Earth and its movements", "Continents and oceans", "Maps and globes", "Mountains and plains", "Weather and climate", "India's states"],
+        5: ["The Earth and globes", "Latitudes and longitudes", "Landforms", "Weather and climate", "Natural resources", "India: physical features", "Agriculture and industries", "Map skills"],
+        6: ["The Earth in space", "Latitudes and longitudes", "Maps and scale", "The Earth's movements", "Major landforms", "India: physical features", "Climate and vegetation", "Resources"],
+        7: ["Environment", "Interior of the Earth", "Changing landforms", "Atmosphere and weather", "Water and oceans", "Natural vegetation and wildlife", "India: people and resources", "Industries"],
+        8: ["Representation of geographical features", "Landforms and their evolution", "Atmosphere and climate", "Water resources", "Natural vegetation", "Agriculture", "Mineral and power resources", "Industries and human resources"],
+    },
+    "Social Studies": {
+        3: ["Our past", "Our community", "Maps and directions", "India around us", "People and occupations", "Caring for the environment"],
+        4: ["Early people and history", "Communities and government", "Maps and globes", "Landforms", "India and its regions", "Our environment"],
+        5: ["Ancient India", "Our Constitution and community", "India's physical features", "Climate and resources", "Agriculture and industries", "Maps and timelines"],
+    },
+    "Computer Studies": {
+        1: ["Parts of a computer", "Using a mouse", "Using a keyboard", "Drawing on a computer", "Computer safety"],
+        2: ["Computer parts", "Keyboard and mouse", "Drawing and typing", "Using simple programs", "Staying safe online"],
+        3: ["Computer hardware and software", "Keyboard skills", "Word processing", "Drawing tools", "Introduction to coding", "Internet safety"],
+        4: ["Computer fundamentals", "Operating a computer", "Word processing", "Presentations", "Introduction to coding", "Internet and safety"],
+        5: ["Hardware and software", "Word processing", "Spreadsheets", "Presentations", "Algorithms and coding", "Internet safety"],
+        6: ["Computer systems", "Operating systems", "Word processing", "Spreadsheets", "Algorithms and flowcharts", "Programming basics", "Networks and cyber safety"],
+        7: ["Computer hardware and software", "Word processing and presentations", "Spreadsheets", "Algorithms", "Programming", "Internet and networks", "Cyber safety"],
+        8: ["Computer systems and networks", "Data representation", "Spreadsheets and databases", "Algorithms and flowcharts", "Programming concepts", "Web technologies", "Cyber safety and ethics"],
+    },
+    "Arts Education": {
+        1: ["Lines and shapes", "Colours around us", "Drawing plants and animals", "Paper craft", "Music and rhythm"],
+        2: ["Drawing with shapes", "Warm and cool colours", "Nature art", "Paper folding and craft", "Music and movement"],
+        3: ["Lines, shapes and patterns", "Colour mixing", "Nature drawing", "Paper craft", "Music and rhythm"],
+        4: ["Drawing and composition", "Colour and texture", "Folk art", "Craft and design", "Music and performance"],
+        5: ["Elements of art", "Observation drawing", "Indian folk art", "Craft and design", "Music, dance and drama"],
+        6: ["Elements and principles of art", "Still life and nature drawing", "Indian art forms", "Craft and design", "Music and theatre"],
+        7: ["Drawing and composition", "Colour theory", "Indian visual arts", "Craft and model making", "Music, dance and drama"],
+        8: ["Visual art and composition", "Perspective and design", "Indian and world art", "Printmaking and craft", "Music, dance and theatre"],
+    },
+}
+
+st.set_page_config(page_title="Little Sun | Learn, practise, shine", page_icon="assets/little_sun_icon.svg", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
@@ -183,16 +295,37 @@ def header() -> None:
     st.markdown('<div class="hero"><span class="sun">☀️</span><h1 style="display:inline">Little Sun</h1><p>Small steps, bright ideas, confident learning.</p></div>', unsafe_allow_html=True)
 
 
+def donation_button() -> None:
+    components.html(
+        '<form><script src="https://checkout.razorpay.com/v1/payment-button.js" '
+        'data-payment_button_id="pl_Tvez6NOZsFJFmN" async></script></form>',
+        height=58,
+        scrolling=False,
+    )
+
+
+def chapters_for(grade: int, subject: str) -> list[str]:
+    by_grade = CHAPTERS.get(subject, {})
+    return by_grade.get(grade, ["General revision", "Key ideas and vocabulary"])
+
+
 def render_setup() -> tuple[int, str, str]:
     with st.sidebar:
         st.markdown("## ☀️ Little Sun")
         st.caption("Your friendly ICSE learning companion")
         grade = st.selectbox("Choose your class", range(1, 9), format_func=lambda x: f"Class {x}", key="grade")
         subject = st.selectbox("Choose a subject", SUBJECTS_BY_CLASS[grade], key="subject")
-        topic = st.text_input("Chapter or topic (optional)", placeholder="e.g. Plants around us", help="Chapter names differ between schools. Type your own chapter or leave it blank for a mixed revision set.")
+        chapter = st.selectbox("Choose a chapter", ["Select a chapter…", *chapters_for(grade, subject)], key="chapter_choice", help="These are common chapter suggestions. Your school may use different names.")
+        custom_chapter = st.text_input("Or enter your own chapter", placeholder="Type a chapter if your syllabus differs", key="custom_chapter")
+        topic = custom_chapter.strip() or ("" if chapter == "Select a chapter…" else chapter)
         st.divider()
         st.caption("🌱 Made for Classes 1–8 · English & Bengali learning")
-        st.caption("A teacher or parent can help check that topics match your school's textbook.")
+        st.caption("Chapter suggestions are general. Match your school's textbook or enter your own chapter above.")
+        st.divider()
+        st.markdown("#### Support Little Sun")
+        st.caption("If you find this app useful, you can support its development.")
+        donation_button()
+        st.caption("App owner: **NilanjanC**")
     return grade, subject, topic
 
 
@@ -355,4 +488,5 @@ def facts_panel(grade: int, subject: str, topic: str) -> None:
 header()
 grade, subject, topic = render_setup()
 home(grade, subject, topic)
-st.markdown("<div style='text-align:center;color:#8a95a3;padding:2rem 0 1rem'>☀️ Little Sun · Keep asking, keep growing.</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center;color:#8a95a3;padding:2rem 0 1rem'>☀️ Little Sun · Created by <b>NilanjanC</b> · Keep asking, keep growing.</div>", unsafe_allow_html=True)
+
