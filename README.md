@@ -39,7 +39,7 @@ On desktop Chrome or Edge, open the deployed app and select **Install** in the a
 
 ## Donations
 
-The sidebar includes the Razorpay payment button configured with the public button ID supplied by the owner. The button is managed through Razorpay; never add a Razorpay secret key to this repository.
+The sidebar's **Donate with Razorpay** button opens the payment form in a large, scrollable popup. It uses the public payment button ID supplied by the owner. The button is managed through Razorpay; never add a Razorpay secret key to this repository.
 
 ## GitHub safety
 
