@@ -24,6 +24,7 @@ except ImportError:
 
 MODEL = "gemini-3.5-flash-lite"
 APP_NAME = "Little Sun"
+PWA_INSTALL_URL = "https://75neel-ops.github.io/deepbluemonkey/little-sun/"
 
 SUBJECTS_BY_CLASS = {
     1: ["English", "Bengali", "Mathematics", "Environmental Studies", "Computer Studies", "Arts Education"],
@@ -315,6 +316,8 @@ def render_setup() -> tuple[int, str, str]:
     with st.sidebar:
         st.markdown("## ☀️ Little Sun")
         st.caption("Your friendly ICSE learning companion")
+        st.link_button("☀️ Install Little Sun", PWA_INSTALL_URL, use_container_width=True)
+        st.caption("Add the sun icon to your desktop or phone.")
         grade = st.selectbox("Choose your class", range(1, 9), format_func=lambda x: f"Class {x}", key="grade")
         subject = st.selectbox("Choose a subject", SUBJECTS_BY_CLASS[grade], key="subject")
         chapter = st.selectbox("Choose a chapter", ["Select a chapter…", *chapters_for(grade, subject)], key="chapter_choice", help="These are common chapter suggestions. Your school may use different names.")
