@@ -295,14 +295,13 @@ def header() -> None:
     st.markdown('<div class="hero"><span class="sun">☀️</span><h1 style="display:inline">Little Sun</h1><p>Small steps, bright ideas, confident learning.</p></div>', unsafe_allow_html=True)
 
 
-def donation_button() -> None:
-    # Razorpay's variable-amount form needs more vertical room than its basic
-    # one-line button. Keep the iframe scrollable so expanded checkout fields
-    # are reachable inside Streamlit's sidebar.
+@st.dialog("Support Little Sun", width="large")
+def donation_dialog() -> None:
+    st.write("Thank you for supporting Little Sun. The secure donation form is provided by Razorpay.")
     components.html(
         '<form><script src="https://checkout.razorpay.com/v1/payment-button.js" '
         'data-payment_button_id="pl_Tvez6NOZsFJFmN" async></script></form>',
-        height=220,
+        height=620,
         scrolling=True,
     )
 
@@ -327,7 +326,8 @@ def render_setup() -> tuple[int, str, str]:
         st.divider()
         st.markdown("#### Support Little Sun")
         st.caption("If you find this app useful, you can support its development.")
-        donation_button()
+        if st.button("💛 Donate with Razorpay", key="open_donation", use_container_width=True):
+            donation_dialog()
         st.caption("App owner: **NilanjanC**")
     return grade, subject, topic
 
