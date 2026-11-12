@@ -152,14 +152,14 @@ st.set_page_config(page_title="Little Sun | Learn, practise, shine", page_icon="
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Nunito:wght@500;600;700;800;900&display=swap');
-:root { --sun:#ed9e27; --ink:#243548; --muted:#718092; --paper:#fffdf8; }
+:root { color-scheme:light; --sun:#ed9e27; --ink:#243548; --muted:#4d5d70; --paper:#fffdf8; }
 html, body, [class*="css"] { font-family:'DM Sans',sans-serif; color:var(--ink); }
 .stApp { background: radial-gradient(ellipse at 80% 0%, #fff0cf 0%, transparent 29%), #fffdf8; }
 .block-container { padding-top:1.5rem; max-width:1180px; }
 [data-testid="stSidebar"] { background:linear-gradient(170deg,#fff4db,#fffdf8 64%); border-right:1px solid #f2e6cf; }
 h1,h2,h3 { font-family:'Nunito',sans-serif; color:#263950; letter-spacing:-.035em; }
 .hero { background:linear-gradient(115deg,#fff0cc,#fff9e9 52%,#eef6ee); border:1px solid #f5e3bd; border-radius:28px; padding:2rem 2.2rem; margin:.2rem 0 1.5rem; box-shadow:0 12px 36px #4633000a; }
-.hero h1 {font-size:2.65rem; margin:0;}.hero p {color:#687487;font-size:1.02rem;margin:.4rem 0 0;}
+.hero h1 {font-size:2.65rem; margin:0;}.hero p {color:#4d5d70;font-size:1.02rem;margin:.4rem 0 0;}
 .sun {font-size:2.2rem; margin-right:.35rem;}
 .card {background:white;border:1px solid #eee9df;border-radius:20px;padding:1.2rem 1.35rem;box-shadow:0 7px 24px #26395008;margin-bottom:1rem;}
 .eyebrow {font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#bc7a18;}
@@ -339,7 +339,7 @@ def home(grade: int, subject: str, topic: str) -> None:
     cards = [("🔑", "Key words", "Learn the important words and ideas."), ("🎯", "Quick practice", "Try a fresh set of four-choice questions."), ("📝", "Practice paper", "Set your marks and time, then see your score."), ("✨", "Fun facts", "Find a surprising fact for your chapter.")]
     for i, (icon, name, blurb) in enumerate(cards):
         with cols[i % 3]:
-            st.markdown(f'<div class="card"><div style="font-size:1.7rem">{icon}</div><b>{name}</b><p style="color:#718092;margin-bottom:0">{blurb}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="card"><div style="font-size:1.7rem">{icon}</div><b>{name}</b><p style="color:#4d5d70;margin-bottom:0">{blurb}</p></div>', unsafe_allow_html=True)
     st.info("Choose a section below to begin. If you know your chapter, add it in the left sidebar for more focused learning.")
     tabs = st.tabs(["🔑 Key words", "🎯 Quick practice", "📝 Practice paper", "✨ Fun facts"])
     with tabs[0]: keywords_panel(grade, subject, topic)
@@ -364,7 +364,7 @@ def keywords_panel(grade: int, subject: str, topic: str) -> None:
         if isinstance(items, list):
             for item in items:
                 if isinstance(item, dict):
-                    st.markdown(f"<div class='card'><b>{item.get('term','')}</b><br><span style='color:#687487'>{item.get('meaning','')}</span></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card'><b>{item.get('term','')}</b><br><span style='color:#4d5d70'>{item.get('meaning','')}</span></div>", unsafe_allow_html=True)
 
 
 def quiz_panel(grade: int, subject: str, topic: str) -> None:
@@ -491,5 +491,5 @@ def facts_panel(grade: int, subject: str, topic: str) -> None:
 header()
 grade, subject, topic = render_setup()
 home(grade, subject, topic)
-st.markdown("<div style='text-align:center;color:#8a95a3;padding:2rem 0 1rem'>☀️ Little Sun · Created by <b>NilanjanC</b> · Keep asking, keep growing.</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center;color:#536174;padding:2rem 0 1rem'>☀️ Little Sun · Created by <b>NilanjanC</b> · Keep asking, keep growing.</div>", unsafe_allow_html=True)
 
